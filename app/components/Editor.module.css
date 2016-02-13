@@ -1,0 +1,37 @@
+.container {
+  height: 100%;
+}
+
+.col {
+  float: left;
+  height: 100%;
+  width: 50%;
+  overflow-y: auto;
+}
+
+.inputArea {
+  width: 100%;
+  border: none;
+  font-family: Consolas, 'Liberation Mono', Menlo, Courier, monospace;
+  font-size: 110%;
+  border-right: 1px solid #ccc;
+}
+
+.previewArea {
+  width: 50%;
+  float: right;
+}
+
+.inputArea,
+.previewArea {
+  overflow-y: auto;
+ height: 100%;
+ padding: 20px;
+ color: #333;
+ background-color: #fff;
+}
+
+.input-area > *,
+.preview-area > * {
+  margin-top: 0;
+}
