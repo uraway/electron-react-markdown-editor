@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { ipcRenderer } from 'electron';
+import { ipcRenderer, autoUpdater } from 'electron';
 
 import InputArea from './InputArea';
 import PreviewArea from './PreviewArea';
@@ -24,20 +24,20 @@ class Editor extends Component {
   }
 
   componentDidMount() {
-    ipcRenderer.on('fileContent', fileData => {
+    ipcRenderer.on('fileContent', (event, fileData) => {
       this.setState({ content: fileData });
     });
     ipcRenderer.on('saveFile', () => {
       ipcRenderer.send('contentToSave', this.state.content);
     });
-  }
-
-  postHatena() {
-    ipcRenderer.send('hatenaPostWsse', this.state.title, this.state.content, this.state.hatenaUsername, this.state.hatenaBlogId, this.state.hatenaApikey, this.state.category, this.state.draftStatus);
-    console.log( this.state.title, this.state.content, this.state.hatenaUsername, this.state.hatenaBlogId, this.state.hatenaApikey, this.state.category, this.state.draftStatus);
-    window.localStorage.setItem('hatenaUsername', this.state.hatenaUsername);
-    window.localStorage.setItem('hatenaBlogId', this.state.hatenaBlogId);
-    window.localStorage.setItem('hatenaApikey', this.state.hatenaApikey);
+    ipcRenderer.on('Error', (event, err) => {
+      console.error(err);
+      alert('エラー\n' + err);
+    });
+    ipcRenderer.on('Response', (event, res) => {
+      console.log(res);
+      alert('はてなブログに投稿しました｡\n' + res);
+    });
   }
 
   handleTitleChange(e) {
@@ -64,6 +64,14 @@ class Editor extends Component {
     }
   }
 
+  postHatena() {
+    ipcRenderer.send('hatenaPostWsse', this.state.title, this.state.content, this.state.hatenaUsername, this.state.hatenaBlogId, this.state.hatenaApikey, this.state.category, this.state.draftStatus);
+
+    window.localStorage.setItem('hatenaUsername', this.state.hatenaUsername);
+    window.localStorage.setItem('hatenaBlogId', this.state.hatenaBlogId);
+    window.localStorage.setItem('hatenaApikey', this.state.hatenaApikey);
+  }
+
   toggleLeftNav() {
     if (this.state.isShowLeftNav) {
       // hide all nav
@@ -81,6 +89,14 @@ class Editor extends Component {
 
   handleUserInput(newContent) {
     this.setState({ content: newContent });
+  }
+
+  onClickedPublic() {
+    this.setState({ draftStatus: false });
+  }
+
+  onClickedDraft() {
+    this.setState({ draftStatus: true });
   }
 
   render() {
@@ -102,6 +118,12 @@ class Editor extends Component {
       leftNav = null;
     }
 
+    let btnPublicClass = 'btn btn-default';
+    if (!this.state.draftStatus) btnPublicClass += ' active';
+
+    let btnDraftClass = 'btn btn-default';
+    if (this.state.draftStatus) btnDraftClass += ' active';
+
     let hatenaForm;
     if (isShowHatenaForm) {
       hatenaForm = (
@@ -112,11 +134,15 @@ class Editor extends Component {
           </div>
           <div className="form-group">
             <label>カテゴリ</label>
-            <input className="form-control" placeholder="Category" value={category} />
+            <input className="form-control" placeholder="Category 調整中" value={category} />
           </div>
-          <div className="form-actions">
-            <button type="submit" className="btn btn-form btn-default" onClick={::this.toggleHatenaForm}>Cancel</button>
-            <button type="submit" className="btn btn-form btn-primary" onClick={::this.postHatena}>OK</button>
+          <div className="btn-group">
+            <button className={btnPublicClass} onClick={::this.onClickedPublic}>
+              公開
+            </button>
+            <button className={btnDraftClass} onClick={::this.onClickedDraft}>
+              下書き
+            </button>
           </div>
           <div className="form-group">
             <label>はてなユーザー名</label>
@@ -129,6 +155,10 @@ class Editor extends Component {
           <div className="form-group">
             <label>はてなAPIKey</label>
             <input className="form-control" placeholder="API Key" type="password" value={hatenaApikey} onChange={::this.handleHatenaApikeyChange}/>
+          </div>
+          <div className="form-actions">
+            <button type="submit" className="btn btn-form btn-default" onClick={::this.toggleHatenaForm}>Cancel</button>
+            <button type="submit" className="btn btn-form btn-primary" onClick={::this.postHatena}>OK</button>
           </div>
         </form>
       );

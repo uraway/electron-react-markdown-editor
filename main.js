@@ -27,34 +27,6 @@ let mainWindow = null;
 
 crashReporter.start();
 
-const blog = require('hatena-blog-api');
-const moment = require('moment');
-
-ipcMain.on('hatenaPostWsse', (event, title, content, hatenaUsername, hatenaBlogId, hatenaApikey, category, draftStatus) => {
-  var client = blog({
-    type: 'wsse',
-    username: hatenaUsername,
-    blogId: hatenaBlogId,
-    apikey: hatenaApikey,
-  });
-
-  client.create({
-    title: title,
-    content: content,
-    updated: moment().format('YYYY-MM-DDTHH:mm:ss'),
-    categories: ['hatena'],
-    draft: draftStatus,
-  }, (err, res) => {
-    if (err) {
-      console.error(err);
-      dialog.showErrorBox('エラー', err);
-    } else {
-      console.log(res);
-      dialog.showMessageBox(res);
-    }
-  });
-});
-
 /*
 const HATENA_CNSUMER = require('./config');
 const OAuthHatena = require('electron-authentication-hatena');
@@ -362,4 +334,35 @@ app.on('ready', () => {
     menu = Menu.buildFromTemplate(template);
     mainWindow.setMenu(menu);
   }
+});
+
+const blog = require('hatena-blog-api');
+const moment = require('moment');
+
+ipcMain.on('hatenaPostWsse', (event, title, content, hatenaUsername, hatenaBlogId, hatenaApikey, category, draftStatus) => {
+  var client = blog({
+    type: 'wsse',
+    username: hatenaUsername,
+    blogId: hatenaBlogId,
+    apikey: hatenaApikey,
+  });
+
+  var options = {
+    title: title,
+    content: content,
+    updated: moment().format('YYYY-MM-DDTHH:mm:ss'),
+    categories: ['hatena'],
+    draft: draftStatus,
+  };
+
+  client.create(options, (err, res) => {
+    if (err) {
+      console.error(err);
+      mainWindow.send('Error', event, err);
+    } else {
+      let url = res.entry.link[1].$.href;
+      console.log(url);
+      mainWindow.send('Response', url);
+    }
+  });
 });
