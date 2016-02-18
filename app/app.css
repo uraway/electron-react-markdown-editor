@@ -39,6 +39,7 @@ body {
 .input-area,
 .preview-area {
   padding: 20px;
+  white-space: normal;
 }
 
 .input-area {

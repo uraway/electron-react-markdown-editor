@@ -33,6 +33,7 @@ class InputArea extends Component {
           highlightActiveLine
           editorProps={{ $blockScrolling: Infinity }}
           width="100%"
+          wrapEnabled
         />
     );
   }

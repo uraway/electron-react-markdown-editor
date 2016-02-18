@@ -1,9 +1,7 @@
 /* eslint strict: 0 */
 'use strict';
 
-const ipc = require('ipc');
 const fs = require('fs');
-const dialog = require('dialog');
 
 function getFileContent(file) {
   fs.readFile(file, 'utf-8', (err, data) => {
@@ -21,12 +19,71 @@ const BrowserWindow = electron.BrowserWindow;
 const Menu = electron.Menu;
 const crashReporter = electron.crashReporter;
 const shell = electron.shell;
+const ipcMain = electron.ipcMain;
+const dialog = electron.dialog;
 let menu;
 let template;
 let mainWindow = null;
 
 crashReporter.start();
 
+const blog = require('hatena-blog-api');
+const moment = require('moment');
+
+ipcMain.on('hatenaPostWsse', (event, title, content, hatenaUsername, hatenaBlogId, hatenaApikey, category, draftStatus) => {
+  var client = blog({
+    type: 'wsse',
+    username: hatenaUsername,
+    blogId: hatenaBlogId,
+    apikey: hatenaApikey,
+  });
+
+  client.create({
+    title: title,
+    content: content,
+    updated: moment().format('YYYY-MM-DDTHH:mm:ss'),
+    categories: ['hatena'],
+    draft: draftStatus,
+  }, (err, res) => {
+    if (err) {
+      console.error(err);
+      dialog.showErrorBox('エラー', err);
+    } else {
+      console.log(res);
+      dialog.showMessageBox(res);
+    }
+  });
+});
+
+/*
+const HATENA_CNSUMER = require('./config');
+const OAuthHatena = require('electron-authentication-hatena');
+
+const hatena = new OAuthHatena({
+  key: HATENA_CNSUMER.key,
+  secret: HATENA_CNSUMER.secret,
+  scopes: ['read_public', 'write_public', 'read_private', 'write_private'],
+});
+
+ipcMain.on('hatenaOAuth', () => {
+  var accessToken;
+  var accessTokenSecret;
+  if (!accessToken) {
+    hatena.startRequest().then((result) => {
+      accessToken = result.accessToken;
+      accessTokenSecret = result.accessTokenSecret;
+      console.log(accessToken, accessTokenSecret);
+
+      ipcMain.send('hatenaPost', (accessToken, accessTokenSecret));
+    }).catch((error) => {
+      console.error(error, error.stack);
+      dialog('Status', error);
+    });
+  } else {
+    ipcMain.send('hatenaPost', (accessToken, accessTokenSecret));
+  }
+});
+*/
 if (process.env.NODE_ENV === 'development') {
   require('electron-debug')();
 }
@@ -144,8 +201,8 @@ app.on('ready', () => {
               filters: [{ name: 'Markdown', extensions: ['md'] }],
             }, fileName => {
               mainWindow.send('saveFile');
-              ipc.on('contentToSave', function(event, content) {
-                fs.writeFile(fileName, content, function(err) {
+              ipcMain.on('contentToSave', (event, content) => {
+                fs.writeFile(fileName, content, (err) => {
                   if (err) {
                     return console.log(err);
                   }
