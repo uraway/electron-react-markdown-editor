@@ -11,7 +11,7 @@ class PreviewArea extends Component {
   }
 
   rawMarkup() {
-    const rawMarkup = marked(this.props.content.toString(),
+    const rawMarkup = marked(this.props.content,
       {
         sanitize: true,
         gfm: true,

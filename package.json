@@ -1,7 +1,7 @@
 {
   "name": "electron-react-boilerplate",
-  "productName": "ElectronReact",
-  "version": "0.7.1",
+  "productName": "ElectronReactMarkdownEditor",
+  "version": "0.0.1",
   "description": "Electron application boilerplate based on React, React Router, Webpack, React Hot Loader for rapid application development",
   "main": "main.js",
   "scripts": {
@@ -15,6 +15,7 @@
     "start-hot": "cross-env HOT=1 NODE_ENV=development electron ./",
     "package": "cross-env NODE_ENV=production node package.js",
     "package-all": "npm run package -- --all",
+    "package-zip-all": "cross-env NODE_ENV=production electron-zip-packager ./ ElectronReactMarkdownEditor --platform=darwin,linux,win32 --arch=x64 --version=0.36.2 --ignore test tools release config.js --out release/",
     "postinstall": "node node_modules/fbjs-scripts/node/check-dev-engines.js package.json"
   },
   "bin": {

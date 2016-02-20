@@ -15,7 +15,6 @@ const appName = argv.name || argv.n || pkg.productName;
 const shouldUseAsar = argv.asar || argv.a || false;
 const shouldBuildAll = argv.all || false;
 
-
 const DEFAULT_OPTS = {
   dir: './',
   name: appName,
@@ -23,8 +22,8 @@ const DEFAULT_OPTS = {
   ignore: [
     '/test($|/)',
     '/tools($|/)',
-    '/release($|/)'
-  ].concat(devDeps.map(name => `/node_modules/${name}($|/)`))
+    '/release($|/)',
+  ].concat(devDeps.map(name => `/node_modules/${name}($|/)`)),
 };
 
 const icon = argv.icon || argv.i || 'app/app';
@@ -50,7 +49,6 @@ if (version) {
     startPack();
   });
 }
-
 
 function startPack() {
   console.log('start pack...');
@@ -91,20 +89,20 @@ function pack(plat, arch, cb) {
       } else if (plat === 'win32') {
         extension = '.ico';
       }
+
       return extension;
-    })()
+    })(),
   };
 
   const opts = Object.assign({}, DEFAULT_OPTS, iconObj, {
     platform: plat,
     arch,
     prune: true,
-    out: `release/${plat}-${arch}`
+    out: `release/${plat}-${arch}`,
   });
 
   packager(opts, cb);
 }
-
 
 function log(plat, arch) {
   return (err, filepath) => {

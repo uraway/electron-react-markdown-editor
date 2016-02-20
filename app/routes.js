@@ -1,7 +1,10 @@
 import React from 'react';
-import { Route } from 'react-router';
-import Editor from './components/Editor';
+import { IndexRoute, Route } from 'react-router';
+import App from './containers/App';
+import EditorPage from './containers/EditorPage';
 
 export default (
-    <Route path="/" component={Editor} />
+  <Route path="/" component={App}>
+    <IndexRoute component={EditorPage} />
+  </Route>
 );

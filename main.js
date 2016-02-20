@@ -6,7 +6,7 @@ const fs = require('fs');
 function getFileContent(file) {
   fs.readFile(file, 'utf-8', (err, data) => {
     if (err) {
-      return console.log(err);
+      dialog.showErrorBox('Error', err);
     }
 
     mainWindow.send('fileContent', data);
@@ -172,11 +172,14 @@ app.on('ready', () => {
               title: 'Save markdown file',
               filters: [{ name: 'Markdown', extensions: ['md'] }],
             }, fileName => {
+              if (fileName === undefined) return;
               mainWindow.send('saveFile');
               ipcMain.on('contentToSave', (event, content) => {
                 fs.writeFile(fileName, content, (err) => {
-                  if (err) {
-                    return console.log(err);
+                  if (err === undefined) {
+                    dialog.showMessageBox({ title: 'ファイルの保存', type: 'info', message: 'ファイルの保存が終了しました', buttons: ['OK'] });
+                  } else {
+                    dialog.showErrorBox('File Save Error', err);
                   }
                 });
               });
