@@ -73,7 +73,13 @@ class HatenaForm extends Component {
   }
 
   postHatena() {
-    ipcRenderer.send('hatenaPostWsse', this.state.title, this.state.content, this.state.hatenaUsername, this.state.hatenaBlogId, this.state.hatenaApikey, this.state.category, this.state.draftStatus);
+    let categoryArray = [];
+    for (let i = 0; i < this.props.entryCategory.length; i++) {
+      console.log(this.props.entryCategory[i].text);
+      categoryArray.push(this.props.entryCategory[i].text);
+    }
+
+    ipcRenderer.send('hatenaPostWsse', this.state.title, this.state.content, this.state.hatenaUsername, this.state.hatenaBlogId, this.state.hatenaApikey, categoryArray, this.state.draftStatus);
   }
 
   render() {
