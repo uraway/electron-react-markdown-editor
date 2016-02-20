@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
-import CategoryItemInput from './CategoryItemInput';
+import EntryCategoryInput from './EntryCategoryInput';
 
-class CategoryItem extends Component {
+class EntryCategory extends Component {
   constructor(props, context) {
     super(props, context);
     this.state = { editing: false };
@@ -13,22 +13,22 @@ class CategoryItem extends Component {
 
   handleSave(id, text) {
     if (text.length === 0) {
-      this.props.deleteCategoryItem(id);
+      this.props.deleteEntryCategory(id);
     } else {
-      this.props.editCategoryItem(id, text);
+      this.props.editEntryCategory(id, text);
     }
 
     this.setState({ editing: false });
   }
 
   render() {
-    const { item, addEntryCategory } = this.props;
+    const { item } = this.props;
     const { editing } = this.state;
 
     let element;
     if (editing) {
       element = (
-        <CategoryItemInput
+        <EntryCategoryInput
           text={item.text}
           editing={editing}
           onSave={(text) => this.handleSave(item.id, text)}
@@ -36,29 +36,26 @@ class CategoryItem extends Component {
       );
     } else {
       element = (
-          <button
+          <label
             onDoubleClick={::this.handleDoubleClick}
-            onClick={() => addEntryCategory(item.text)}
           >
-          {item.text}
-        </button>
+          {item.text} /
+          </label>
       );
     }
 
     return (
-      <span>
+      <span className="list-item">
         {element}
       </span>
     );
   }
 }
 
-CategoryItem.propTypes = {
+EntryCategory.propTypes = {
   item: PropTypes.object.isRequired,
-  editCategoryItem: PropTypes.func.isRequired,
-  deleteCategoryItem: PropTypes.func.isRequired,
-
-  addEntryCategory: PropTypes.func.isRequired,
+  editEntryCategory: PropTypes.func.isRequired,
+  deleteEntryCategory: PropTypes.func.isRequired,
 };
 
-export default CategoryItem;
+export default EntryCategory;

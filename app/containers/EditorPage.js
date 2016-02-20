@@ -27,14 +27,6 @@ class EditorPage extends Component {
     ipcRenderer.on('saveFile', () => {
       ipcRenderer.send('contentToSave', this.state.content);
     });
-    ipcRenderer.on('Error', (event, err) => {
-      console.error(err);
-      alert('エラー\n' + err);
-    });
-    ipcRenderer.on('Response', (event, res) => {
-      console.log(res);
-      alert('はてなブログに投稿しました｡\n' + res);
-    });
   }
 
   handleToggleLeftNav() {
@@ -60,12 +52,16 @@ class EditorPage extends Component {
 
   render() {
     const { content, isShowLeftNav, isShowHatenaForm } = this.state;
-    const { actions, categoryItems } = this.props;
+    const { actions, categoryItems, entryCategory } = this.props;
 
     let leftNav;
     if (isShowLeftNav) {
       leftNav = (
-          <LeftNav actions={actions} categoryItems={categoryItems} toggleHatenaForm={::this.handleToggleHatenaForm}/>
+          <LeftNav
+            actions={actions}
+            categoryItems={categoryItems}
+            toggleHatenaForm={::this.handleToggleHatenaForm}
+          />
       );
     } else {
       leftNav = null;
@@ -74,7 +70,12 @@ class EditorPage extends Component {
     let hatenaForm;
     if (isShowHatenaForm) {
       hatenaForm = (
-        <HatenaForm categoryItems={categoryItems} content={content} actions={actions} />
+        <HatenaForm
+          categoryItems={categoryItems}
+          content={content}
+          actions={actions}
+          entryCategory={entryCategory}
+        />
       );
     } else {
       hatenaForm = null;
@@ -108,14 +109,16 @@ class EditorPage extends Component {
 
 import * as EditorActions from '../actions';
 
-EditorPage.propsTypes = {
+EditorPage.propTypes = {
   actions: PropTypes.object.isRequired,
   categoryItems: PropTypes.array.isRequired,
+  entryCategory: PropTypes.array.isRequired,
 };
 
 function mapStateToProps(state) {
   return {
     categoryItems: state.categoryItems,
+    entryCategory: state.entryCategory,
   };
 }
 

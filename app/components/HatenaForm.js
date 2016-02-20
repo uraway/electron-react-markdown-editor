@@ -1,7 +1,10 @@
 import React, { Component, PropTypes } from 'react';
+import { ipcRenderer } from 'electron';
 
 import CategoryItemInput from './CategoryItemInput';
 import CategoryItem from './CategoryItem';
+
+import EntryCategory from './EntryCategory';
 
 class HatenaForm extends Component {
   constructor(props) {
@@ -12,7 +15,17 @@ class HatenaForm extends Component {
       hatenaBlogId: window.localStorage.getItem('hatenaBlogId'),
       hatenaApikey: window.localStorage.getItem('hatenaApikey'),
       draftStatus: false,
-      entryCategory: [],
+    });
+  }
+
+  componentDidMount() {
+    ipcRenderer.on('Error', (event, err) => {
+      console.error(err);
+      alert('エラー\n' + err);
+    });
+    ipcRenderer.on('Response', (event, res) => {
+      console.log(res);
+      alert('はてなブログに投稿しました｡\n' + res);
     });
   }
 
@@ -46,10 +59,8 @@ class HatenaForm extends Component {
     }
   }
 
-  handleAddEntryCategory(text) {
-    console.log(this.props.entryCategory);
-    console.log(text);
-    this.setState({ entryCategory: text });
+  postHatena() {
+    ipcRenderer.send('postHatena', this.state.title, this.state.content, this.state.hatenaUsername, this.state.hatenaBlogId, this.state.hatenaApikey, this.state.category, this.state.draftStatus);
   }
 
   render() {
@@ -59,45 +70,71 @@ class HatenaForm extends Component {
     let btnDraftClass = 'btn btn-default';
     if (this.state.draftStatus) btnDraftClass += ' active';
 
-    const { title, hatenaUsername, hatenaBlogId, hatenaApikey, entryCategory } = this.state;
-    const { categoryItems, actions } = this.props;
-
+    const { title, hatenaUsername, hatenaBlogId, hatenaApikey } = this.state;
+    const { categoryItems, actions, entryCategory } = this.props;
 
     return (
           <form>
             <div className="form-group">
               <label>タイトル</label>
-              <input className="form-control" placeholder="Title" value={title} onChange={::this.handleTitleChange}/>
+              <input className="form-control" placeholder="Entry Title" value={title} onChange={::this.handleTitleChange}/>
             </div>
 
             <div className="form-group">
               <label>カテゴリー</label>
-              <span>{entryCategory}</span>
+
+            <p>
+              {entryCategory.map(item =>
+                <EntryCategory
+                  key={item.id}
+                  item={item}
+                  {...actions}
+                />
+              )}
+            </p>
+
               <ul className="list-group">
                 <li className="list-header">
-                  <CategoryItemInput
-                    newItem
-                    onSave={::this.handleSave}
-                    placeholder="Add a new Category item"
-                  />
+                  <label>カテゴリーリスト</label>
+                  <p>
+                    <CategoryItemInput
+                      newItem
+                      onSave={::this.handleSave}
+                      placeholder="Add a new Category"
+                    />
+                </p>
                 </li>
 
-                <li className="list-group-item">
+                <span>
                   {categoryItems.map(item =>
-                    <CategoryItem key={item.id} item={item} {...actions} onClickedItem={::this.handleAddEntryCategory}/>
+                    <CategoryItem
+                      key={item.id}
+                      item={item}
+                      {...actions}
+                    />
                   )}
-                </li>
+                </span>
               </ul>
             </div>
 
             <div className="btn-group">
-              <button className={btnPublicClass} onClick={::this.onClickedPublic}>
+              <label>エントリーの状態</label>
+              <p>
+                <button
+                  className={btnPublicClass}
+                  onClick={::this.onClickedPublic}
+                >
                 公開
-              </button>
-              <button className={btnDraftClass} onClick={::this.onClickedDraft}>
+                </button>
+                <button
+                  className={btnDraftClass}
+                  onClick={::this.onClickedDraft}
+                >
                 下書き
-              </button>
+                </button>
+              </p>
             </div>
+
             <div className="form-group">
               <label>はてなユーザー名</label>
               <input className="form-control" placeholder="username" value={hatenaUsername} onChange={::this.handleHatenaUsernameChange}/>
@@ -111,17 +148,21 @@ class HatenaForm extends Component {
               <input className="form-control" placeholder="API Key" type="password" value={hatenaApikey} onChange={::this.handleHatenaApikeyChange}/>
             </div>
             <div className="form-actions">
-              <button type="submit" className="btn btn-form btn-default">Cancel</button>
-              <button type="submit" className="btn btn-form btn-primary">OK</button>
+              <button onClick={::this.postHatena} type="submit" className="btn btn-form btn-primary">投稿する</button>
             </div>
           </form>
     );
   }
 }
 
-HatenaForm.propsTypes = {
+HatenaForm.propTypes = {
   content: PropTypes.string,
-  addCategoryItem: PropTypes.func.isRequired,
+  actions: PropTypes.object.isRequired,
+  addCategoryItem: PropTypes.func,
+  entryCategory: PropTypes.array,
+  categoryItems: PropTypes.array,
+  editEntryCategory: PropTypes.func,
+  addEntryCategory: PropTypes.func,
 };
 
 export default HatenaForm;

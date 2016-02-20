@@ -354,7 +354,7 @@ ipcMain.on('hatenaPostWsse', (event, title, content, hatenaUsername, hatenaBlogI
     title: title,
     content: content,
     updated: moment().format('YYYY-MM-DDTHH:mm:ss'),
-    categories: ['hatena'],
+    categories: category,
     draft: draftStatus,
   };
 

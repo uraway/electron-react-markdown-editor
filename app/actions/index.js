@@ -11,3 +11,15 @@ export function deleteCategoryItem(id) {
 export function editCategoryItem(id, text) {
   return { type: types.EDIT_CATEGORY_ITEM, id, text };
 }
+
+export function addEntryCategory(text) {
+  return { type: types.ADD_ENTRY_CATEGORY, text };
+}
+
+export function deleteEntryCategory(id) {
+  return { type: types.DELETE_ENTRY_CATEGORY, id };
+}
+
+export function editEntryCategory(id, text) {
+  return { type: types.EDIT_ENTRY_CATEGORY, id, text };
+}
