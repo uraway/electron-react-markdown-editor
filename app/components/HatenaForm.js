@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { ipcRenderer } from 'electron';
+import { open } from 'openurl';
 
 import CategoryItemInput from './CategoryItemInput';
 import CategoryItem from './CategoryItem';
@@ -15,6 +16,7 @@ class HatenaForm extends Component {
       hatenaBlogId: window.localStorage.getItem('hatenaBlogId'),
       hatenaApikey: window.localStorage.getItem('hatenaApikey'),
       draftStatus: false,
+      openAfterPost: false,
     });
   }
 
@@ -26,6 +28,9 @@ class HatenaForm extends Component {
     ipcRenderer.on('Response', (event, res) => {
       console.log(res);
       alert('はてなブログに投稿しました｡\n' + res);
+      if (this.state.openAfterPost) {
+        open(res);
+      }
     });
   }
 
@@ -59,8 +64,16 @@ class HatenaForm extends Component {
     }
   }
 
+  handleClickOpenAfterPost() {
+    if (this.state.openAfterPost) {
+      this.setState({ openAfterPost: false });
+    } else {
+      this.setState({ openAfterPost: true });
+    }
+  }
+
   postHatena() {
-    ipcRenderer.send('postHatena', this.state.title, this.state.content, this.state.hatenaUsername, this.state.hatenaBlogId, this.state.hatenaApikey, this.state.category, this.state.draftStatus);
+    ipcRenderer.send('hatenaPostWsse', this.state.title, this.state.content, this.state.hatenaUsername, this.state.hatenaBlogId, this.state.hatenaApikey, this.state.category, this.state.draftStatus);
   }
 
   render() {
@@ -70,7 +83,7 @@ class HatenaForm extends Component {
     let btnDraftClass = 'btn btn-default';
     if (this.state.draftStatus) btnDraftClass += ' active';
 
-    const { title, hatenaUsername, hatenaBlogId, hatenaApikey } = this.state;
+    const { title, hatenaUsername, hatenaBlogId, hatenaApikey, openAfterPost } = this.state;
     const { categoryItems, actions, entryCategory } = this.props;
 
     return (
@@ -150,6 +163,12 @@ class HatenaForm extends Component {
             <div className="form-actions">
               <button onClick={::this.postHatena} type="submit" className="btn btn-form btn-primary">投稿する</button>
             </div>
+
+            <div className="checkbox">
+              <label>
+                <input type="checkbox" checked={openAfterPost} onClick={::this.handleClickOpenAfterPost} /> 投稿後､ エントリーをブラウザで開く
+                </label>
+              </div>
           </form>
     );
   }

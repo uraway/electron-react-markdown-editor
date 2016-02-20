@@ -32,7 +32,10 @@ class EditorPage extends Component {
   handleToggleLeftNav() {
     if (this.state.isShowLeftNav) {
       // hide all nav
-      this.setState({ isShowLeftNav: false });
+      this.setState({
+        isShowLeftNav: false,
+        isShowHatenaForm: false,
+      });
     } else {
       this.setState({ isShowLeftNav: true });
     }
