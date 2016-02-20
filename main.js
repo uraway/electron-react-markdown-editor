@@ -27,35 +27,6 @@ let mainWindow = null;
 
 crashReporter.start();
 
-/*
-const HATENA_CNSUMER = require('./config');
-const OAuthHatena = require('electron-authentication-hatena');
-
-const hatena = new OAuthHatena({
-  key: HATENA_CNSUMER.key,
-  secret: HATENA_CNSUMER.secret,
-  scopes: ['read_public', 'write_public', 'read_private', 'write_private'],
-});
-
-ipcMain.on('hatenaOAuth', () => {
-  var accessToken;
-  var accessTokenSecret;
-  if (!accessToken) {
-    hatena.startRequest().then((result) => {
-      accessToken = result.accessToken;
-      accessTokenSecret = result.accessTokenSecret;
-      console.log(accessToken, accessTokenSecret);
-
-      ipcMain.send('hatenaPost', (accessToken, accessTokenSecret));
-    }).catch((error) => {
-      console.error(error, error.stack);
-      dialog('Status', error);
-    });
-  } else {
-    ipcMain.send('hatenaPost', (accessToken, accessTokenSecret));
-  }
-});
-*/
 if (process.env.NODE_ENV === 'development') {
   require('electron-debug')();
 }
@@ -343,14 +314,14 @@ const blog = require('hatena-blog-api');
 const moment = require('moment');
 
 ipcMain.on('hatenaPostWsse', (event, title, content, hatenaUsername, hatenaBlogId, hatenaApikey, category, draftStatus) => {
-  var client = blog({
+  let client = blog({
     type: 'wsse',
     username: hatenaUsername,
     blogId: hatenaBlogId,
     apikey: hatenaApikey,
   });
 
-  var options = {
+  let options = {
     title: title,
     content: content,
     updated: moment().format('YYYY-MM-DDTHH:mm:ss'),
@@ -369,3 +340,52 @@ ipcMain.on('hatenaPostWsse', (event, title, content, hatenaUsername, hatenaBlogI
     }
   });
 });
+
+const HATENA_CNSUMER = require('./config');
+const OAuthHatena = require('electron-authentication-hatena');
+
+const hatena = new OAuthHatena({
+  key: HATENA_CNSUMER.key,
+  secret: HATENA_CNSUMER.secret,
+  scopes: ['read_public', 'write_public', 'read_private', 'write_private'],
+});
+
+ipcMain.on('hatenaOAuthRequest', () => {
+  hatena.startRequest().then((result) => {
+    const accessToken = result.accessToken;
+    const accessTokenSecret = result.accessTokenSecret;
+    mainWindow.send('hatenaOAuthResponse', accessToken, accessTokenSecret);
+  }).catch((error) => {
+    console.error(error, error.stack);
+  });
+});
+
+ipcMain.on('hatenaOAuthPostRequest', (event, title, content, hatenaUsername, hatenaBlogId, categoryArray, draftStatus, accessToken, accessTokenSecret) => {
+  let client = blog({
+    type: 'oauth',
+    blogId: hatenaBlogId,
+    consumerKey: HATENA_CNSUMER.key,
+    consumerSecret: HATENA_CNSUMER.secret,
+    accessToken: accessToken,
+    accessTokenSecret: accessTokenSecret,
+  });
+
+  let options = {
+    title: title,
+    content: content,
+    updated: moment().format('YYYY-MM-DDTHH:mm:ss'),
+    categories: category,
+    draft: draftStatus,
+  };
+
+  client.create(options, (err, res) => {
+    if (err) {
+      console.error(err);
+      mainWindow.send('Error', event, err);
+    } else {
+      let url = res.entry.link[1].$.href;
+      console.log(url);
+      mainWindow.send('Response', url);
+    }
+  });
+})

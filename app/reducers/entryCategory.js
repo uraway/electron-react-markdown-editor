@@ -15,7 +15,7 @@ export default function entryCategory(state = initialState, action) {
           id: Math.floor(Math.random() * 100000000),
           text: action.text,
         },
-        ...state,
+        ...state
       ];
 
     case DELETE_ENTRY_CATEGORY:
