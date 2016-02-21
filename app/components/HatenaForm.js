@@ -137,7 +137,6 @@ class HatenaForm extends Component {
             <div className="form-group">
               <label className="nav-group-item">カテゴリー</label>
 
-            <p>
               {entryCategory.map(item =>
                 <EntryCategory
                   key={item.id}
@@ -145,18 +144,15 @@ class HatenaForm extends Component {
                   {...actions}
                 />
               )}
-            </p>
 
               <ul className="list-group">
                 <li className="list-header">
                   <label className="nav-group-item">カテゴリーリスト</label>
-                  <p>
                     <CategoryItemInput
                       newItem
                       onSave={::this.handleSave}
                       placeholder="Add a new Category"
                     />
-                </p>
                 </li>
 
                 <span>

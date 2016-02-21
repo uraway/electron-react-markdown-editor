@@ -38,6 +38,7 @@ class EditorPage extends Component {
       // hide all nav
       this.setState({
         isShowLeftNav: false,
+        isShowHatenaForm: false,
       });
     } else {
       this.setState({
@@ -61,7 +62,7 @@ class EditorPage extends Component {
     } else {
       this.setState({
         isShowHatenaForm: true,
-        isShowLeftNav: false,
+        isShowLeftNav: true,
       });
     }
   }
