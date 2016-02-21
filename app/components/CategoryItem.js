@@ -36,19 +36,21 @@ class CategoryItem extends Component {
       );
     } else {
       element = (
-          <button
-            onDoubleClick={::this.handleDoubleClick}
-            onClick={() => addEntryCategory(item.text)}
-          >
-          {item.text}
-        </button>
+          <div>
+            <button
+              onDoubleClick={::this.handleDoubleClick}
+              onClick={() => addEntryCategory(item.text)}
+            >
+            {item.text}
+            </button>
+          </div>
       );
     }
 
     return (
-      <span>
+      <label>
         {element}
-      </span>
+      </label>
     );
   }
 }

@@ -9,6 +9,7 @@ import PreviewArea from '../components/PreviewArea';
 import Footer from '../components/Footer';
 import LeftNav from '../components/LeftNav';
 import HatenaForm from '../components/HatenaForm';
+import HatenaList from '../components/HatenaList';
 
 class EditorPage extends Component {
   constructor(props) {
@@ -17,6 +18,7 @@ class EditorPage extends Component {
       content: '# This is markdown',
       isShowLeftNav: false,
       isShowHatenaForm: false,
+      isShowHatenaList: false,
     });
   }
 
@@ -30,6 +32,8 @@ class EditorPage extends Component {
   }
 
   handleToggleLeftNav() {
+    console.log(this.state.isShowLeftNav);
+
     if (this.state.isShowLeftNav) {
       // hide all nav
       this.setState({
@@ -37,7 +41,9 @@ class EditorPage extends Component {
         isShowHatenaForm: false,
       });
     } else {
-      this.setState({ isShowLeftNav: true });
+      this.setState({
+        isShowLeftNav: true,
+      });
     }
   }
 
@@ -46,15 +52,37 @@ class EditorPage extends Component {
   }
 
   handleToggleHatenaForm() {
+    console.log(this.state.isShowHatenaForm);
+
     if (this.state.isShowHatenaForm) {
-      this.setState({ isShowHatenaForm: false });
+      this.setState({
+        isShowHatenaForm: false,
+        isShowLeftNav: true,
+      });
     } else {
-      this.setState({ isShowHatenaForm: true });
+      this.setState({
+        isShowHatenaForm: true,
+        isShowLeftNav: true,
+      });
+    }
+  }
+
+  handleToggleHatenaList() {
+    console.log(this.state.isShowHatenaList);
+
+    if (this.state.isShowHatenaList) {
+      this.setState({
+        isShowHatenaForm: true,
+      });
+    } else {
+      this.setState({
+        isShowHatenaForm: false,
+      });
     }
   }
 
   render() {
-    const { content, isShowLeftNav, isShowHatenaForm } = this.state;
+    const { content, isShowLeftNav, isShowHatenaForm, isShowHatenaList } = this.state;
     const { actions, categoryItems, entryCategory } = this.props;
 
     let leftNav;
@@ -78,6 +106,8 @@ class EditorPage extends Component {
           content={content}
           actions={actions}
           entryCategory={entryCategory}
+          toggleHatenaForm={::this.handleToggleHatenaForm}
+          toggleHatenaList={::this.handleToggleHatenaList}
         />
       );
     } else {
@@ -92,6 +122,7 @@ class EditorPage extends Component {
 
             {leftNav}
             {hatenaForm}
+
             <div className="pane">
               <InputArea content={content} onUserInput={::this.handleUserInput} />
             </div>

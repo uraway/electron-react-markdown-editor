@@ -34,7 +34,6 @@ class CategoryItemInput extends Component {
         classNames="form-control"
         type="text"
         placeholder={placeholder}
-        autoFocus
         value={text}
         onBlur={::this.handleBlur}
         onChange={::this.handleChange}

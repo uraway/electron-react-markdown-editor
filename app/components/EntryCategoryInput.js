@@ -21,9 +21,8 @@ class EntryCategoryInput extends Component {
     const { text } = this.state;
     return (
       <input
-        classNames="form-control"
+        classNames="form-control nav-group-item"
         type="text"
-        autoFocus
         value={text}
         onChange={::this.handleChange}
         onKeyDown={::this.handleSubmit}
