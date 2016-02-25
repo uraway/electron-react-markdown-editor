@@ -107,7 +107,7 @@ class EditorPage extends Component {
       hatenaForm = (
         <HatenaForm
           newEntry
-          content={markdown}
+          markdown={markdown}
           categoryItems={categoryItems}
           actions={actions}
           entryCategory={entryCategory}
@@ -153,7 +153,7 @@ class EditorPage extends Component {
 
             <div className="pane">
               <PreviewArea
-                value={markdown}
+                markdown={markdown}
               />
             </div>
 
