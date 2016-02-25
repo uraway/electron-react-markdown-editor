@@ -9,3 +9,13 @@ Electron Markdown Editor powered by React-Redux
 - Hatena Blog Entry List
 
 ![](http://i.imgur.com/Xucn6VC.png)
+
+## Developing
+
+```
+npm run hot-server
+npm run start-hot
+```
+
+---
+MIT Licensed
