@@ -1,42 +1,54 @@
 import React, { Component, PropTypes } from 'react';
 import brace from 'brace';
 import AceEditor from 'react-ace';
+import { ipcRenderer, clipboard } from 'electron';
 
 import 'brace/mode/markdown';
-import 'brace/theme/terminal';
+import 'brace/theme/github';
 
 class InputArea extends Component {
-
-  static propTypes = {
-    content: PropTypes.string,
-    onUserInput: PropTypes.func.isRequired,
-  };
-
   handleChange(newContent) {
-    this.props.onUserInput(newContent);
+    this.props.updateMarkdown(newContent);
+  }
+
+  imageUpload() {
+    let image = clipboard.readImage();
+    let imagePng = image.toPng();
+
+    ipcRenderer.send('postImage', image, imagePng);
+  }
+
+  componentDidMount() {
+    ipcRenderer.on('postImageResponse', (event, res) => {
+      console.log(res);
+    });
   }
 
   render() {
-    const { content } = this.props;
+    const { markdown } = this.props;
     return (
         <AceEditor
           className="input-area"
           mode="markdown"
-          theme="terminal"
+          theme="github"
           name="UNIQUE_ID_OF_DIV"
-          value={content}
+          value={markdown}
           onChange={::this.handleChange}
+          onPaste={::this.imageUpload}
           maxLines={9999}
-          minLines={100}
-          showPrintMargin
-          showGutter
+          minLines={50}
           highlightActiveLine
-          editorProps={{ $blockScrolling: Infinity }}
+          editorProps={{ $blockScrolling: true }}
           width="100%"
           wrapEnabled
         />
     );
   }
 }
+
+InputArea.propTypes = {
+  updateMarkdown: PropTypes.func.isRequired,
+  markdown: PropTypes.string,
+};
 
 export default InputArea;

@@ -23,8 +23,9 @@ class Footer extends Component {
               <span className="icon icon-home icon-text"/>SNS
             </button>
           </div>
-          <button className="btn btn-primary pull-right" onClick={() => open('https://github.com/uraway/electron-react-markdown-editor')}>
-            <span className="icon icon-github"></span>
+          <button className="btn btn-default pull-right" onClick={() => open('https://github.com/uraway/electron-react-markdown-editor')}>
+            <span className="icon icon-github icon-text"></span>
+            fork me on Github!
           </button>
         </div>
       </footer>

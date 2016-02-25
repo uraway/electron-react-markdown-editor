@@ -31,8 +31,8 @@ class CategoryItemInput extends Component {
     const { placeholder } = this.props;
     return (
       <input
-        classNames="form-control"
         type="text"
+        className="form-control"
         placeholder={placeholder}
         value={text}
         onBlur={::this.handleBlur}

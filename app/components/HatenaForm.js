@@ -11,11 +11,11 @@ class HatenaForm extends Component {
   constructor(props) {
     super(props);
     this.state = ({
-      title: '',
       hatenaUsername: window.localStorage.getItem('hatenaUsername'),
       hatenaBlogId: window.localStorage.getItem('hatenaBlogId'),
       hatenaApikey: window.localStorage.getItem('hatenaApikey'),
-      draftStatus: false,
+      title: this.props.title || '',
+      draftStatus: this.props.draftStatus || false,
       openAfterPost: false,
     });
   }
@@ -41,6 +41,9 @@ class HatenaForm extends Component {
       window.localStorage.setItem('hatenaAccessToken', accessToken);
       window.localStorage.setItem('hatenaAccessTokenSecret', accessTokenSecret);
     });
+    window.localStorage.setItem('hatenaUsername', this.state.hatenaUsername);
+    window.localStorage.setItem('hatenaBlogId', this.state.hatenaBlogId);
+    window.localStorage.setItem('hatenaApikey', this.state.hatenaApikey);
   }
 
   onClickedPublic() {
@@ -120,22 +123,25 @@ class HatenaForm extends Component {
     if (this.state.draftStatus) btnDraftClass += ' active';
 
     const { title, hatenaUsername, hatenaBlogId, hatenaApikey, openAfterPost } = this.state;
-    const { categoryItems, actions, entryCategory, toggleHatenaForm, toggleHatenaList } = this.props;
+    const { categoryItems, actions, entryCategory, toggleHatenaList } = this.props;
 
     return (
-          <form className="pane-sm sidebar">
-            <nav className="nav-group">
-            <h5 className="nav-group-title">はてなブログ投稿フォーム</h5>
-            <div className="form-actions nav-group-item">
-              <button onClick={::this.handleClickHatenaBackBtn} type="submit" className="btn btn-form btn-primary">戻る</button>
-            </div>
-            <div className="form-group">
-              <label className="nav-group-item">タイトル</label>
-              <input autoFocus className="form-control" placeholder="Entry Title" value={title} onChange={::this.handleTitleChange}/>
-            </div>
+          <ul className="pane pane-sm sidebar list-group">
+            <li className="list-group-header">
+              <h5>
+                <strong>はてなブログ 投稿フォーム</strong>
+              </h5>
+                <button onClick={::this.handleClickHatenaBackBtn} type="submit" className="btn btn-form btn-default"><span className="icon icon-cancel-circled icon-text"></span>
+                閉じる</button>
+            </li>
 
-            <div className="form-group">
-              <label className="nav-group-item">カテゴリー</label>
+            <li className="list-group-item">
+              <h5><strong>タイトル</strong></h5>
+              <input autoFocus className="form-control" placeholder="Entry Title" value={title} onChange={::this.handleTitleChange}/>
+            </li>
+
+            <li className="list-group-item">
+              <h5><strong>カテゴリー</strong></h5>
 
               {entryCategory.map(item =>
                 <EntryCategory
@@ -144,18 +150,16 @@ class HatenaForm extends Component {
                   {...actions}
                 />
               )}
-
-              <ul className="list-group">
-                <li className="list-header">
-                  <label className="nav-group-item">カテゴリーリスト</label>
-                    <CategoryItemInput
-                      newItem
-                      onSave={::this.handleSave}
-                      placeholder="Add a new Category"
-                    />
-                </li>
-
-                <span>
+            </li>
+            <li className="list-group-item">
+              <h5><strong>カテゴリーリスト</strong></h5>
+                <CategoryItemInput
+                  className="form-group"
+                  newItem
+                  onSave={::this.handleSave}
+                  placeholder="Add a new category item"
+                />
+              <div>
                   {categoryItems.map(item =>
                     <CategoryItem
                       key={item.id}
@@ -163,13 +167,12 @@ class HatenaForm extends Component {
                       {...actions}
                     />
                   )}
-                </span>
-              </ul>
-            </div>
+              </div>
+            </li>
 
-            <div className="btn-group">
-              <label className="nav-group-item">エントリーの状態</label>
-              <p className="nav-group-item">
+            <li className="list-group-item btn-group">
+              <h5><strong>エントリーの状態</strong></h5>
+              <span>
                 <button
                   className={btnPublicClass}
                   onClick={::this.onClickedPublic}
@@ -182,42 +185,37 @@ class HatenaForm extends Component {
                 >
                 下書き
                 </button>
-              </p>
-            </div>
+              </span>
+            </li>
 
-            <div className="form-group">
-              <label>はてなユーザー名</label>
+            <li className="list-group-item">
+              <h5><strong>はてなユーザー名</strong></h5>
               <input className="form-control" placeholder="username" value={hatenaUsername} onChange={::this.handleHatenaUsernameChange}/>
-            </div>
-            <div className="form-group">
-              <label className="nav-group-item">はてなブログID</label>
+            </li>
+            <li className="list-group-item">
+              <h5><strong>はてなブログID</strong></h5><div onClick={() => open('http://blog.hatena.ne.jp/my/config')}>(確認する)</div>
               <input className="form-control" placeholder="Blog ID" value={hatenaBlogId} onChange={::this.handleHatenaBlogIdChange}/>
-            </div>
-            <div className="form-group">
-              <label className="nav-group-item">はてなAPIKey</label>
+            </li>
+            <li className="list-group-item">
+              <h5><strong>はてなAPIKey</strong></h5><div onClick={() => open('http://blog.hatena.ne.jp/my/config/detail')}>(確認する)</div>
               <input className="form-control" placeholder="API Key" type="password" value={hatenaApikey} onChange={::this.handleHatenaApikeyChange}/>
-            </div>
-            <div className="form-actions">
-              <button onClick={::this.postHatena} type="submit" className="btn btn-form btn-primary pull-right">投稿する</button>
-            </div>
+            </li>
+            <li className="list-group-item">
+              <button onClick={::this.postHatena} type="submit" className="btn btn-form btn-primary">投稿する</button>
+            </li>
 
-            <div className="checkbox">
+            <li className="checkbox list-group-item">
               <label>
                 <input type="checkbox" checked={openAfterPost} onClick={::this.handleClickOpenAfterPost} /> 投稿後ブラウザで開く
                 </label>
-              </div>
-
-            <button onClick={() => toggleHatenaList()} className="btn btn-default">
-              <span className="icon icon-popup icon-text"></span>
-              リスト
-            </button>
-{/*
-              <div className="form-actions">
-                <button onClick={::this.OAuthHatena} type="submit" className="btn btn-form btn-primary">OAuth</button>
-              </div>
-*/}
-          </nav>
-          </form>
+              </li>
+            <li className="list-group-item">
+              <button onClick={() => toggleHatenaList()} className="btn btn-default">
+                <span className="icon icon-popup icon-text"></span>
+                リスト
+              </button>
+            </li>
+        </ul>
     );
   }
 }
@@ -230,6 +228,11 @@ HatenaForm.propTypes = {
   categoryItems: PropTypes.array,
   editEntryCategory: PropTypes.func,
   addEntryCategory: PropTypes.func,
+  toggleHatenaForm: PropTypes.func.isRequired,
+  toggleHatenaList: PropTypes.func.isRequired,
+  newEntry: PropTypes.bool,
+  title: PropTypes.string,
+  draftStatus: PropTypes.func,
 };
 
 export default HatenaForm;

@@ -15,7 +15,7 @@ class EditorPage extends Component {
   constructor(props) {
     super(props);
     this.state = ({
-      content: '# This is markdown',
+      markdown: '# This is markdown editor powered by Electron and React-Redux',
       isShowLeftNav: false,
       isShowHatenaForm: false,
       isShowHatenaList: false,
@@ -24,71 +24,75 @@ class EditorPage extends Component {
 
   componentDidMount() {
     ipcRenderer.on('fileContent', (event, fileData) => {
-      this.setState({ content: fileData });
+      this.updateMarkdown(fileData);
     });
     ipcRenderer.on('saveFile', () => {
-      ipcRenderer.send('contentToSave', this.state.content);
+      ipcRenderer.send('contentToSave', this.state.markdown);
     });
   }
 
-  handleToggleLeftNav() {
-    console.log(this.state.isShowLeftNav);
+  updateMarkdown(md) {
+    this.setState({ markdown: md });
+  }
 
+  handleToggleLeftNav() {
     if (this.state.isShowLeftNav) {
       // hide all nav
       this.setState({
         isShowLeftNav: false,
         isShowHatenaForm: false,
+        isShowHatenaList: false,
       });
     } else {
       this.setState({
         isShowLeftNav: true,
+        isShowHatenaForm: false,
+        isShowHatenaList: false,
       });
     }
   }
 
-  handleUserInput(newContent) {
-    this.setState({ content: newContent });
-  }
-
   handleToggleHatenaForm() {
-    console.log(this.state.isShowHatenaForm);
-
     if (this.state.isShowHatenaForm) {
       this.setState({
         isShowHatenaForm: false,
         isShowLeftNav: true,
+        isShowHatenaList: false,
       });
     } else {
       this.setState({
         isShowHatenaForm: true,
-        isShowLeftNav: true,
+        isShowLeftNav: false,
+        isShowHatenaList: false,
       });
     }
   }
 
   handleToggleHatenaList() {
-    console.log(this.state.isShowHatenaList);
-
     if (this.state.isShowHatenaList) {
       this.setState({
+        isShowLeftNav: false,
         isShowHatenaForm: true,
+        isShowHatenaList: false,
       });
     } else {
       this.setState({
+        isShowLeftNav: false,
         isShowHatenaForm: false,
+        isShowHatenaList: true,
       });
     }
   }
 
   render() {
-    const { content, isShowLeftNav, isShowHatenaForm, isShowHatenaList } = this.state;
-    const { actions, categoryItems, entryCategory } = this.props;
+    const { isShowLeftNav, isShowHatenaForm, isShowHatenaList, markdown } = this.state;
+    const { actions, categoryItems, entryCategory, hatenaEntry } = this.props;
 
     let leftNav;
     if (isShowLeftNav) {
       leftNav = (
           <LeftNav
+            className="pane-group"
             actions={actions}
             categoryItems={categoryItems}
             toggleHatenaForm={::this.handleToggleHatenaForm}
@@ -102,8 +106,9 @@ class EditorPage extends Component {
     if (isShowHatenaForm) {
       hatenaForm = (
         <HatenaForm
+          newEntry
+          content={markdown}
           categoryItems={categoryItems}
-          content={content}
           actions={actions}
           entryCategory={entryCategory}
           toggleHatenaForm={::this.handleToggleHatenaForm}
@@ -114,6 +119,20 @@ class EditorPage extends Component {
       hatenaForm = null;
     }
 
+    let hatenaList;
+    if (isShowHatenaList) {
+      hatenaList = (
+        <HatenaList
+          toggleHatenaList={::this.handleToggleHatenaList}
+          hatenaEntry={hatenaEntry}
+          {...actions}
+          updateMarkdown={::this.updateMarkdown}
+        />
+      );
+    } else {
+      hatenaList = null;
+    }
+
     return (
       <div className="window">
 
@@ -122,13 +141,20 @@ class EditorPage extends Component {
 
             {leftNav}
             {hatenaForm}
+            {hatenaList}
 
             <div className="pane">
-              <InputArea content={content} onUserInput={::this.handleUserInput} />
+              <InputArea
+                {...actions}
+                updateMarkdown={::this.updateMarkdown}
+                markdown={markdown}
+              />
             </div>
 
             <div className="pane">
-              <PreviewArea content={content}/>
+              <PreviewArea
+                value={markdown}
+              />
             </div>
 
           </div>
@@ -147,12 +173,14 @@ EditorPage.propTypes = {
   actions: PropTypes.object.isRequired,
   categoryItems: PropTypes.array.isRequired,
   entryCategory: PropTypes.array.isRequired,
+  hatenaEntry: PropTypes.array.isRequired,
 };
 
 function mapStateToProps(state) {
   return {
     categoryItems: state.categoryItems,
     entryCategory: state.entryCategory,
+    hatenaEntry: state.hatenaEntry,
   };
 }
 

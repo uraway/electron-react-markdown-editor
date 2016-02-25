@@ -28,14 +28,6 @@ body {
   min-height: 100%;
 }
 
-.col {
-  float: left;
-  height: 100%;
-  width: 50%;
-  overflow-y: hidden;
-  overflow-x: hidden;
-}
-
 .input-area,
 .preview-area {
   padding: 20px;
@@ -45,6 +37,7 @@ body {
 .input-area {
   border: none;
   font-size: 100%;
+  height: 100%;
 }
 
 .header {
@@ -53,4 +46,8 @@ body {
   height: 100px;
   background-color: #4E9ABE;
   color: #fff;
+}
+
+.pane {
+  width: 20px;
 }
