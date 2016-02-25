@@ -7,7 +7,7 @@ class CategoryItem extends Component {
     this.state = { editing: false };
   }
 
-  handleDoubleClick() {
+  handleEditClick() {
     this.setState({ editing: true });
   }
 
@@ -38,19 +38,19 @@ class CategoryItem extends Component {
       element = (
           <div>
             <button
-              onDoubleClick={::this.handleDoubleClick}
               onClick={() => addEntryCategory(item.text)}
             >
             {item.text}
             </button>
+            <span onClick={::this.handleEditClick} className="icon icon-pencil pull-right"></span>
           </div>
       );
     }
 
     return (
-      <label>
+      <span>
         {element}
-      </label>
+      </span>
     );
   }
 }

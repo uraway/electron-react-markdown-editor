@@ -23,3 +23,11 @@ export function deleteEntryCategory(id) {
 export function editEntryCategory(id, text) {
   return { type: types.EDIT_ENTRY_CATEGORY, id, text };
 }
+
+export function addHatenaEntry(id, title, summary, content, category, draftStatus) {
+  return { type: types.ADD_HATENA_ENTRY, id, title, summary, content, category, draftStatus };
+}
+
+export function deleteHatenaEntry(id) {
+  return { type: types.DELETE_HATENA_ENTRY, id };
+}

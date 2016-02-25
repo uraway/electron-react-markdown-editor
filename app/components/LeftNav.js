@@ -13,15 +13,14 @@ class LeftNav extends Component {
     const { toggleHatenaForm, toggleQuiitaForm, toggleTumblrForm } = this.props;
 
     return (
-      <div>
         <div className="pane pane-sm sidebar">
-          <div className="pane">
             <nav className="nav-group">
               <h5 className="nav-group-title">SNS</h5>
               <a className="nav-group-item" onClick={::this.handleClickHatenaFormBtn}>
                 <span className="icon icon-home"></span>
                   はてなブログに投稿する
               </a>
+{/*
               <a className="nav-group-item">
                 <span className="icon icon-home"></span>
                 Qiitaに投稿する
@@ -30,10 +29,9 @@ class LeftNav extends Component {
                 <span className="icon icon-home"></span>
                 Tumblrに投稿する
               </a>
+*/}
             </nav>
-          </div>
         </div>
-      </div>
     );
   }
 }

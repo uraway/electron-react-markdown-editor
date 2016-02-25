@@ -381,11 +381,67 @@ ipcMain.on('hatenaOAuthPostRequest', (event, title, content, hatenaUsername, hat
   client.create(options, (err, res) => {
     if (err) {
       console.error(err);
-      mainWindow.send('Error', event, err);
+      mainWindow.send('Error', err);
     } else {
       let url = res.entry.link[1].$.href;
       console.log(url);
       mainWindow.send('Response', url);
     }
   });
-})
+});
+
+const https = require('https');
+
+ipcMain.on('hatenaGETRequest', (event, hatenaUsername, hatenaBlogId, hatenaApikey, params) => {
+  let url = 'https://blog.hatena.ne.jp/' + hatenaUsername + '/' + hatenaBlogId + '/atom/entry' + params;
+
+  let options = {
+    hostname: 'blog.hatena.ne.jp',
+    path: '/' + hatenaUsername + '/' + hatenaBlogId + '/atom/entry',
+    auth: '' + hatenaUsername + ':' + hatenaApikey,
+    method: 'GET',
+  };
+
+  https.get(options, (res) => {
+    let body = '';
+    res.setEncoding('utf-8');
+
+    res.on('data', (chunk) => {
+      body += chunk;
+    });
+
+    res.on('end', () => {
+      mainWindow.send('hatenaGETResponse', body);
+    });
+  }).on('error', (err) => {
+    console.log(err.message);
+  });
+});
+
+ipcMain.on('postImage', (image, imagePng) => {
+  const clientId = '992d0d37a6c7517';
+
+  let options = {
+    hostname: 'api.imgur.com',
+    path: '/3/upload',
+    headers: { Authorization: 'Client-ID ' + clientId },
+    method: 'POST',
+    formData: { image: imagePng },
+    json: true,
+  };
+
+  https.get(options, (res) => {
+    let body = '';
+    res.setEncoding('utf-8');
+
+    res.on('data', (chunk) => {
+      body += chunk;
+    });
+
+    res.on('end', () => {
+      mainWindow.send('postImageResponse', body);
+    }).on('error', (err) => {
+      mainWindow.send('postImageResponse', err);
+    });
+  });
+});

@@ -7,7 +7,7 @@ class EntryCategory extends Component {
     this.state = { editing: false };
   }
 
-  handleDoubleClick() {
+  handleEditClick() {
     this.setState({ editing: true });
   }
 
@@ -22,7 +22,7 @@ class EntryCategory extends Component {
   }
 
   render() {
-    const { item, deleteEntryCategory } = this.props;
+    const { item } = this.props;
     const { editing } = this.state;
 
     let element;
@@ -37,21 +37,16 @@ class EntryCategory extends Component {
     } else {
       element = (
         <div>
-          <label
-            onDoubleClick={::this.handleDoubleClick}
-          >
-          {item.text} /
-          </label>
-{/*          <span onClick={() => deleteEntryCategory(item.id)} className="icon icon-cancel"/>
-*/}
+          {item.text}
+          <span onClick={::this.handleEditClick} className="icon icon-pencil pull-right"></span>
         </div>
       );
     }
 
     return (
-      <label>
+      <span>
         {element}
-      </label>
+      </span>
     );
   }
 }

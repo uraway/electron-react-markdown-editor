@@ -2,16 +2,9 @@ import React, { Component, PropTypes } from 'react';
 import marked from 'marked';
 
 class PreviewArea extends Component {
-  static propTypes = {
-    content: PropTypes.string,
-  };
-
-  constructor(props) {
-    super(props);
-  }
 
   rawMarkup() {
-    const rawMarkup = marked(this.props.content,
+    const rawMarkup = marked(this.props.value,
       {
         sanitize: true,
         gfm: true,
@@ -33,5 +26,9 @@ class PreviewArea extends Component {
     );
   }
 }
+
+PreviewArea.propTypes = {
+  value: PropTypes.string.isRequired,
+};
 
 export default PreviewArea;
