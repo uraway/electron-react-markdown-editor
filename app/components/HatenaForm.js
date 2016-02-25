@@ -31,10 +31,6 @@ class HatenaForm extends Component {
       if (this.state.openAfterPost) {
         open(res);
       }
-
-      window.localStorage.setItem('hatenaUsername', this.state.hatenaUsername);
-      window.localStorage.setItem('hatenaBlogId', this.state.hatenaBlogId);
-      window.localStorage.setItem('hatenaApikey', this.state.hatenaApikey);
     });
 
     ipcRenderer.on('hatenaOAuthResponse', (event, accessToken, accessTokenSecret) => {
@@ -91,24 +87,7 @@ class HatenaForm extends Component {
       categoryArray.push(this.props.entryCategory[i].text);
     }
 
-    ipcRenderer.send('hatenaPostWsse', this.state.title, this.state.content, this.state.hatenaUsername, this.state.hatenaBlogId, this.state.hatenaApikey, categoryArray, this.state.draftStatus);
-  }
-
-  OAuthHatena() {
-    let categoryArray = [];
-    for (let i = 0; i < this.props.entryCategory.length; i++) {
-      console.log(this.props.entryCategory[i].text);
-      categoryArray.push(this.props.entryCategory[i].text);
-    }
-
-    let accessToken = window.localStorage.getItem('hatenaAccessToken');
-    let accessTokenSecret = window.localStorage.getItem('hatenaAccessTokenSecret');
-    console.log(accessToken);
-    if (accessToken === null && accessTokenSecret === null) {
-      ipcRenderer.send('hatenaOAuthRequest');
-    } else {
-      ipcRenderer.send('hatenaOAuthPostRequest', this.state.title, this.state.content, this.state.hatenaUsername, this.state.hatenaBlogId, categoryArray, this.state.draftStatus, accessToken, accessTokenSecret);
-    }
+    ipcRenderer.send('hatenaPostWsse', this.state.title, this.props.markdown, this.state.hatenaUsername, this.state.hatenaBlogId, this.state.hatenaApikey, categoryArray, this.state.draftStatus);
   }
 
   handleClickHatenaBackBtn() {
@@ -221,7 +200,7 @@ class HatenaForm extends Component {
 }
 
 HatenaForm.propTypes = {
-  content: PropTypes.string,
+  markdown: PropTypes.string,
   actions: PropTypes.object.isRequired,
   addCategoryItem: PropTypes.func,
   entryCategory: PropTypes.array,

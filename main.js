@@ -329,6 +329,10 @@ ipcMain.on('hatenaPostWsse', (event, title, content, hatenaUsername, hatenaBlogI
     draft: draftStatus,
   };
 
+  console.log(title);
+  console.log(content);
+  console.log(hatenaUsername);
+
   client.create(options, (err, res) => {
     if (err) {
       console.error(err);

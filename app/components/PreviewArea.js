@@ -4,7 +4,7 @@ import marked from 'marked';
 class PreviewArea extends Component {
 
   rawMarkup() {
-    const rawMarkup = marked(this.props.value,
+    const rawMarkup = marked(this.props.markdown,
       {
         sanitize: true,
         gfm: true,
@@ -28,7 +28,7 @@ class PreviewArea extends Component {
 }
 
 PreviewArea.propTypes = {
-  value: PropTypes.string.isRequired,
+  markdown: PropTypes.string.isRequired,
 };
 
 export default PreviewArea;
